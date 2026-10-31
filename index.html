@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Navaja — herramientas gratis online</title>
+<title>Kit: herramientas gratis online</title>
 <meta name="description" content="Herramientas gratis y rápidas: generador de QR, contraseñas, contador de palabras, porcentajes, dividir cuenta, edad y conversor de unidades. Sin registro.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -54,14 +54,25 @@ button:disabled{opacity:.6;cursor:wait}
 #qr img{max-width:100%;height:auto}
 .ad{grid-column:1/-1;border:1px dashed var(--line);border-radius:10px;padding:18px;text-align:center;color:var(--mut);font-size:.8rem}
 footer{max-width:1100px;margin:0 auto;color:var(--mut);font-size:.85rem;padding:24px 20px 50px}
+@media (hover:hover) and (pointer:fine){
+  html.cur-on,html.cur-on *{cursor:none}
+  html.cur-on input:not([type=checkbox]):not([type=range]):not([type=file]),html.cur-on textarea{cursor:text}
+  .cur-dot,.cur-ring{position:fixed;left:0;top:0;pointer-events:none;z-index:999;border-radius:50%;opacity:0;transition:opacity .2s}
+  .cur-dot{width:8px;height:8px;margin:-4px 0 0 -4px;background:var(--red)}
+  .cur-ring{width:34px;height:34px;margin:-17px 0 0 -17px;border:2px solid var(--txt);transition:opacity .2s,width .2s,height .2s,margin .2s,background-color .2s}
+  html.cur-on .cur-dot,html.cur-on .cur-ring{opacity:1}
+  html.cur-hover .cur-ring{width:54px;height:54px;margin:-27px 0 0 -27px;background:#1C232B14}
+  html.cur-down .cur-ring{width:24px;height:24px;margin:-12px 0 0 -12px}
+  html.cur-text .cur-dot,html.cur-text .cur-ring,html.cur-out .cur-dot,html.cur-out .cur-ring{opacity:0}
+}
 @media(max-width:400px){main{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 <header>
   <div class="brand">
-    <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><rect x="2" y="12" width="40" height="20" rx="10" fill="#C8202F"/><path d="M19 22h6M22 19v6" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
-    <h1>Navaja</h1>
+    <svg width="46" height="46" viewBox="0 0 46 46" aria-hidden="true"><path d="M16 14v-3a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v3" fill="none" stroke="#1C232B" stroke-width="3"/><rect x="4" y="14" width="38" height="26" rx="6" fill="#C8202F"/><rect x="4" y="24" width="38" height="3" fill="#A31824"/><rect x="19" y="21" width="8" height="9" rx="2" fill="#fff"/></svg>
+    <h1>Kit</h1>
   </div>
   <p class="lead">Las herramientas que buscas a cada rato en Google, juntas en una sola página: gratis, sin crear cuenta y sin descargar nada.</p>
   <div class="how">
@@ -160,7 +171,7 @@ footer{max-width:1100px;margin:0 auto;color:var(--mut);font-size:.85rem;padding:
   </section>
 </main>
 
-<footer>Navaja, herramientas gratis hechas en Panamá.</footer>
+<footer>Kit, herramientas gratis hechas en Panamá.</footer>
 
 <script>
 const $=id=>document.getElementById(id);
@@ -297,6 +308,25 @@ function nl(){
   $('nOut').innerHTML=`<b>${t}</b>`;
 }
 $('nVal').oninput=nl; nl();
+/* Cursor */
+if(matchMedia('(hover:hover) and (pointer:fine)').matches){
+  const H=document.documentElement,dot=document.createElement('div'),ring=document.createElement('div');
+  dot.className='cur-dot';ring.className='cur-ring';document.body.append(dot,ring);
+  const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let x=-100,y=-100,rx=x,ry=y,started=false;
+  const loop=()=>{rx+=(x-rx)*.2;ry+=(y-ry)*.2;ring.style.transform=`translate(${rx}px,${ry}px)`;requestAnimationFrame(loop)};
+  addEventListener('pointermove',e=>{x=e.clientX;y=e.clientY;dot.style.transform=`translate(${x}px,${y}px)`;
+    if(still)ring.style.transform=dot.style.transform;
+    if(!started){started=true;rx=x;ry=y;H.classList.add('cur-on');if(!still)loop()}
+    const t=e.target;
+    H.classList.toggle('cur-text',!!t.closest('textarea,input:not([type=checkbox]):not([type=range]):not([type=file])'));
+    H.classList.toggle('cur-hover',!!t.closest('a,button,select,label,input[type=checkbox],input[type=range],input[type=file]'));
+    H.classList.remove('cur-out');
+  });
+  document.addEventListener('pointerleave',()=>H.classList.add('cur-out'));
+  addEventListener('pointerdown',()=>H.classList.add('cur-down'));
+  addEventListener('pointerup',()=>H.classList.remove('cur-down'));
+}
 </script>
 </body>
 </html>
