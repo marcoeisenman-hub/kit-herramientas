@@ -272,7 +272,7 @@ function letras(n){if(n===0)return'cero';
 function nl(){
   const v=parseFloat($('nVal').value);
   if(!Number.isFinite(v)||v<0||v>=1e12){$('nOut').textContent='Escribe una cantidad entre 0 y 999,999,999,999.';return}
-  const cents=Math.round(v*100),ent=Math.floor(cents/100),c=cents%100;
+  const cents=Math.round(+(v*100).toFixed(6)),ent=Math.floor(cents/100),c=cents%100;
   let t=letras(ent).replace(/veintiuno$/,'veintiún').replace(/uno$/,'un');
   t=(/(millón|millones)$/.test(t)?t+' de':t)+(ent===1?' dólar':' dólares');
   t=t.charAt(0).toUpperCase()+t.slice(1)+(c?' con '+String(c).padStart(2,'0')+'/100':(ent===1?' exacto':' exactos'));
