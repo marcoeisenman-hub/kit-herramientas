@@ -362,8 +362,8 @@ if(matchMedia('(hover:hover) and (pointer:fine)').matches){
 /* Ver con un amigo: cursores en vivo (PeerJS, sin servidor propio) */
 (()=>{
   const PRE='kit-herramientas-sala-',COLORS=['#2563EB','#059669','#D97706','#7C3AED','#DB2777','#0891B2'];
-  const me={id:Math.random().toString(36).slice(2,10),name:localStorage.getItem('kitName')||'Amigo '+Math.floor(Math.random()*90+10)};
-  let peer=null,host=false,conns=[],hostConn=null,code=null,people={},sendT=0,last=null,alive=true;
+  const me={id:Array.from(crypto.getRandomValues(new Uint8Array(8)),x=>'abcdefghijklmnopqrstuvwxyz0123456789'[x%36]).join(''),name:localStorage.getItem('kitName')||'Amigo '+Math.floor(Math.random()*90+10)};
+  let peer=null,host=false,conns=[],hostConn=null,code=null,people=Object.create(null),sendT=0,last=null,running=false;
   const people$=$('rPeople');
   $('rName').value=me.name;
   $('rName').oninput=()=>{me.name=$('rName').value.trim().slice(0,16)||'Amigo';localStorage.setItem('kitName',me.name);send({t:'n',name:me.name});renderList()};
@@ -388,7 +388,7 @@ if(matchMedia('(hover:hover) and (pointer:fine)').matches){
     p.el.querySelector('span').textContent=p.name;return p}
   function drop(id){const p=people[id];if(!p)return;p.el.remove();p.edge.remove();delete people[id];renderList()}
   function onMsg(m,from){
-    if(!m||typeof m!=='object'||typeof m.id!=='string'||m.id===me.id)return;
+    if(!m||typeof m!=='object'||typeof m.id!=='string'||!/^[a-z0-9]{4,12}$/.test(m.id)||m.id===me.id)return;
     m.name=String(m.name||'Amigo').slice(0,16);
     if(from)from._pid=m.id;
     if(m.t==='bye'){drop(m.id)}
@@ -408,7 +408,7 @@ if(matchMedia('(hover:hover) and (pointer:fine)').matches){
     return{x:d.px*document.documentElement.scrollWidth-scrollX,y:d.py*document.documentElement.scrollHeight-scrollY};
   }
   function frame(){
-    if(!alive)return;
+    if(!code&&!peer){running=false;return}
     for(const p of Object.values(people)){
       const t=target(p);if(!t){p.el.hidden=true;p.edge.hidden=true;continue}
       if(p.x===null){p.x=t.x;p.y=t.y}else{p.x+=(t.x-p.x)*.35;p.y+=(t.y-p.y)*.35}
@@ -438,7 +438,7 @@ if(matchMedia('(hover:hover) and (pointer:fine)').matches){
     c.on('close',()=>{if(host){conns=conns.filter(x=>x!==c);if(c._pid){drop(c._pid);relay({t:'bye',id:c._pid,name:''},null)}}
       else{Object.keys(people).forEach(drop);status('La sala se cerró. Crea una nueva para seguir.')}});
   }
-  function openUI(){$('rStart').hidden=true;$('rOn').hidden=false;requestAnimationFrame(frame)}
+  function openUI(){$('rStart').hidden=true;$('rOn').hidden=false;if(!running){running=true;requestAnimationFrame(frame)}}
   function setCode(c){code=c;const u=new URL(location.href);u.search='?sala='+c;u.hash='';$('rUrl').value=u.href;history.replaceState(null,'','?sala='+c);renderList()}
   function create(tries=0){
     openUI();status('Creando sala…');host=true;
@@ -451,9 +451,10 @@ if(matchMedia('(hover:hover) and (pointer:fine)').matches){
   function join(c){
     openUI();status('Entrando a la sala '+c+'…');host=false;
     peer=new Peer();
-    peer.on('open',()=>{hostConn=peer.connect(PRE+c,{reliable:false});wire(hostConn);
-      hostConn.on('open',()=>setCode(c));
-      setTimeout(()=>{if(!hostConn.open)status('No encontramos esa sala. Pídele a tu amigo un link nuevo.')},9000)});
+    const me_peer=peer;
+    peer.on('open',()=>{const hc=hostConn=peer.connect(PRE+c,{reliable:false});wire(hc);
+      hc.on('open',()=>setCode(c));
+      setTimeout(()=>{if(peer===me_peer&&hostConn===hc&&!hc.open)status('No encontramos esa sala. Pídele a tu amigo un link nuevo.')},9000)});
     peer.on('error',err=>status(err.type==='peer-unavailable'?'No encontramos esa sala. Pídele a tu amigo un link nuevo.':'No se pudo conectar. Revisa tu internet.'));
   }
   function leave(){send({t:'bye'});Object.keys(people).forEach(drop);if(peer)peer.destroy();
