@@ -6,52 +6,69 @@
 <title>Navaja — herramientas gratis online</title>
 <meta name="description" content="Herramientas gratis y rápidas: generador de QR, contraseñas, contador de palabras, porcentajes, dividir cuenta, edad y conversor de unidades. Sin registro.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 <style>
-:root{--bg:#0f1020;--card:#191a33;--line:#2a2c52;--txt:#f2f3ff;--mut:#a3a6cf;
---c1:#ff5d73;--c2:#ffb340;--c3:#3ddc97;--c4:#4cc9f0;--c5:#a78bfa;--c6:#f472b6;--c7:#facc15}
+:root{--bg:#E9ECEF;--card:#FFFFFF;--line:#D3D8DE;--txt:#1C232B;--mut:#5B6670;--red:#C8202F;--redd:#A31824;--steel:#F4F6F8}
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.45}
-header{padding:56px 20px 28px;text-align:center;background:radial-gradient(circle at 20% 0,#ff5d7340,transparent 45%),radial-gradient(circle at 80% 10%,#4cc9f040,transparent 45%)}
-h1{font-size:clamp(2.2rem,6vw,3.6rem);margin:0;font-weight:800;letter-spacing:-.03em}
-h1 span{background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3),var(--c4),var(--c5));-webkit-background-clip:text;background-clip:text;color:transparent}
-header p{color:var(--mut);margin:10px auto 22px;max-width:520px}
-nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-nav a{color:var(--txt);text-decoration:none;font-size:.9rem;font-weight:600;padding:8px 14px;border-radius:999px;background:var(--card);border:1px solid var(--line)}
-nav a:hover{border-color:var(--c4)}
-main{max-width:1100px;margin:0 auto;padding:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
-.tool{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;border-top:5px solid var(--a);scroll-margin-top:16px}
-.tool h2{margin:0 0 4px;font-size:1.2rem}
-.tool .sub{color:var(--mut);font-size:.88rem;margin:0 0 14px}
-label{display:block;font-size:.82rem;color:var(--mut);margin:10px 0 4px}
-input,select,textarea{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1020;color:var(--txt);font:inherit}
-input:focus,select:focus,textarea:focus{outline:2px solid var(--a);border-color:transparent}
+body{margin:0;font-family:"Instrument Sans",system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5}
+header{max-width:1100px;margin:0 auto;padding:56px 20px 24px}
+.brand{display:flex;align-items:center;gap:14px}
+.brand svg{flex:none}
+h1{font-size:clamp(2.4rem,6vw,3.6rem);margin:0;font-weight:700;letter-spacing:-.02em;line-height:1}
+.lead{font-size:1.15rem;max-width:600px;margin:16px 0 6px}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px 28px;margin:26px 0 28px;padding:20px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.how p{margin:0;color:var(--mut);font-size:.95rem}
+.how b{display:block;color:var(--txt);margin-bottom:2px}
+nav{display:flex;flex-wrap:wrap;gap:8px}
+nav a{color:var(--txt);text-decoration:none;font-size:.9rem;font-weight:500;padding:7px 13px;border-radius:8px;background:var(--card);border:1px solid var(--line)}
+nav a:hover{border-color:var(--red);color:var(--red)}
+main{max-width:1100px;margin:0 auto;padding:8px 20px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.tool{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;scroll-margin-top:16px}
+.tool h2{margin:0 0 4px;font-size:1.2rem;font-weight:600}
+.tool .sub{color:var(--mut);font-size:.9rem;margin:0 0 14px}
+label{display:block;font-size:.85rem;color:var(--mut);margin:10px 0 4px}
+input,select,textarea{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--steel);color:var(--txt);font:inherit}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--red);outline-offset:1px;border-color:transparent}
+input[type=range]{accent-color:var(--red);padding:0;background:none;border:0}
 textarea{min-height:110px;resize:vertical}
-.row{display:flex;gap:10px}.row>*{flex:1}
-button{margin-top:12px;padding:11px 16px;border:0;border-radius:10px;font:inherit;font-weight:700;background:var(--a);color:#0f1020;cursor:pointer}
-button:hover{filter:brightness(1.1)}
-.out{margin-top:14px;padding:14px;border-radius:12px;background:#0f1020;border:1px dashed var(--line);font-size:1.05rem;min-height:48px;word-break:break-all}
-.big{font-size:1.6rem;font-weight:800;color:var(--a)}
+.row{display:flex;gap:10px}.row>*{flex:1;min-width:0}
+button{margin-top:12px;padding:10px 16px;border:0;border-radius:8px;font:inherit;font-weight:600;background:var(--red);color:#fff;cursor:pointer}
+button:hover{background:var(--redd)}
+button:focus-visible,a:focus-visible{outline:2px solid var(--txt);outline-offset:2px}
+button:disabled{opacity:.6;cursor:wait}
+.ghost{background:transparent;color:var(--red);border:1px solid var(--red)}
+.ghost:hover{background:#C8202F14}
+.out{margin-top:14px;padding:14px;border-radius:10px;background:var(--steel);border:1px solid var(--line);font-size:1.05rem;min-height:48px;word-break:break-word}
+#pOut{font-family:ui-monospace,Menlo,monospace;word-break:break-all}
+.big{font-size:1.6rem;font-weight:700;color:var(--txt)}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;text-align:center}
-.stats div{background:#0f1020;border-radius:10px;padding:10px 4px}
-.stats b{display:block;font-size:1.3rem;color:var(--a)}
-.stats small{color:var(--mut);font-size:.72rem}
-.chk{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:.88rem}
+.stats div{background:var(--steel);border:1px solid var(--line);border-radius:8px;padding:10px 4px}
+.stats b{display:block;font-size:1.3rem}
+.stats small{color:var(--mut);font-size:.75rem}
+.chk{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:.9rem}
 .chk label{display:flex;align-items:center;gap:6px;margin:0;color:var(--txt)}
-.chk input{width:auto}
-#qr{display:flex;justify-content:center;background:#fff;border-radius:12px;padding:12px;margin-top:14px}
+.chk input{width:auto;accent-color:var(--red)}
+#qr{display:flex;justify-content:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:14px}
 #qr:empty{display:none}
 #qr img{max-width:100%;height:auto}
-.ad{grid-column:1/-1;border:1px dashed var(--line);border-radius:14px;padding:18px;text-align:center;color:var(--mut);font-size:.8rem}
-footer{text-align:center;color:var(--mut);font-size:.82rem;padding:30px 20px 50px}
+.ad{grid-column:1/-1;border:1px dashed var(--line);border-radius:10px;padding:18px;text-align:center;color:var(--mut);font-size:.8rem}
+footer{max-width:1100px;margin:0 auto;color:var(--mut);font-size:.85rem;padding:24px 20px 50px}
 @media(max-width:400px){main{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 <header>
-  <h1><span>Navaja</span></h1>
-  <p>Herramientas gratis, rápidas y sin registro. Todo funciona en tu navegador: nada de lo que escribes sale de tu equipo.</p>
+  <div class="brand">
+    <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><rect x="2" y="12" width="40" height="20" rx="10" fill="#C8202F"/><path d="M19 22h6M22 19v6" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
+    <h1>Navaja</h1>
+  </div>
+  <p class="lead">Las herramientas que buscas a cada rato en Google, juntas en una sola página: gratis, sin crear cuenta y sin descargar nada.</p>
+  <div class="how">
+    <p><b>Elige una herramienta</b>Crea un QR, cuenta las palabras de tu ensayo, baja el peso de una foto o escribe un monto en letras.</p>
+    <p><b>Usa al instante</b>El resultado aparece mientras escribes. No hay que registrarse ni esperar.</p>
+    <p><b>Todo queda en tu equipo</b>Tus textos y fotos no se suben a ningún servidor: se procesan en tu propio navegador.</p>
+  </div>
   <nav>
     <a href="#qr-tool">QR</a><a href="#pass">Contraseñas</a><a href="#words">Palabras</a>
     <a href="#pct">Porcentajes</a><a href="#split">Dividir cuenta</a><a href="#age">Edad</a><a href="#units">Unidades</a><a href="#img">Comprimir foto</a><a href="#letras">Números a letras</a>
@@ -59,7 +76,7 @@ footer{text-align:center;color:var(--mut);font-size:.82rem;padding:30px 20px 50p
 </header>
 
 <main>
-  <section class="tool" id="qr-tool" style="--a:var(--c1)">
+  <section class="tool" id="qr-tool">
     <h2>Generador de QR</h2><p class="sub">Para un link, un WhatsApp o un texto.</p>
     <label for="qrText">Texto o link</label>
     <input id="qrText" placeholder="https://tu-negocio.com">
@@ -68,7 +85,7 @@ footer{text-align:center;color:var(--mut);font-size:.82rem;padding:30px 20px 50p
     <button id="qrDl" hidden>Descargar PNG</button>
   </section>
 
-  <section class="tool" id="pass" style="--a:var(--c2)">
+  <section class="tool" id="pass">
     <h2>Generador de contraseñas</h2><p class="sub">Seguras y aleatorias.</p>
     <label for="pLen">Largo: <b id="pLenV">16</b></label>
     <input type="range" id="pLen" min="8" max="40" value="16">
@@ -77,22 +94,22 @@ footer{text-align:center;color:var(--mut);font-size:.82rem;padding:30px 20px 50p
       <label><input type="checkbox" id="pNum" checked>Números</label>
       <label><input type="checkbox" id="pSym" checked>Símbolos</label>
     </div>
-    <button id="pBtn">Generar</button> <button id="pCopy" style="background:transparent;color:var(--a);border:1px solid var(--a)">Copiar</button>
+    <button id="pBtn">Generar</button> <button id="pCopy" class="ghost">Copiar</button>
     <div class="out" id="pOut"></div>
   </section>
 
-  <section class="tool" id="words" style="--a:var(--c3)">
+  <section class="tool" id="words">
     <h2>Contador de palabras</h2><p class="sub">Ideal para tareas y ensayos.</p>
     <textarea id="wText" placeholder="Pega o escribe tu texto aquí…"></textarea>
     <div class="stats">
       <div><b id="wW">0</b><small>palabras</small></div>
       <div><b id="wC">0</b><small>caracteres</small></div>
       <div><b id="wS">0</b><small>oraciones</small></div>
-      <div><b id="wR">0</b><small>min lectura</small></div>
+      <div><b id="wR">0</b><small>min de lectura</small></div>
     </div>
   </section>
 
-  <section class="tool" id="pct" style="--a:var(--c4)">
+  <section class="tool" id="pct">
     <h2>Calculadora de porcentajes</h2><p class="sub">Descuentos, notas, impuestos.</p>
     <div class="row"><div><label for="pctA">¿Cuánto es el %</label><input id="pctA" type="number" value="7"></div>
     <div><label for="pctB">de</label><input id="pctB" type="number" value="50"></div></div>
@@ -102,9 +119,7 @@ footer{text-align:center;color:var(--mut);font-size:.82rem;padding:30px 20px 50p
     <div class="out" id="pctOut2"></div>
   </section>
 
-  <div class="ad">Espacio publicitario</div>
-
-  <section class="tool" id="split" style="--a:var(--c5)">
+  <section class="tool" id="split">
     <h2>Dividir la cuenta</h2><p class="sub">Con propina incluida.</p>
     <label for="sTot">Total de la cuenta ($)</label><input id="sTot" type="number" value="60">
     <div class="row"><div><label for="sTip">Propina %</label><input id="sTip" type="number" value="10"></div>
@@ -112,13 +127,15 @@ footer{text-align:center;color:var(--mut);font-size:.82rem;padding:30px 20px 50p
     <div class="out" id="sOut"></div>
   </section>
 
-  <section class="tool" id="age" style="--a:var(--c6)">
+  <section class="tool" id="age">
     <h2>Calculadora de edad</h2><p class="sub">Años, meses, días y tu próximo cumpleaños.</p>
     <label for="aDate">Fecha de nacimiento</label><input id="aDate" type="date">
     <div class="out" id="aOut">Elige una fecha.</div>
   </section>
 
-  <section class="tool" id="units" style="--a:var(--c7)">
+  <div class="ad">Espacio publicitario</div>
+
+  <section class="tool" id="units">
     <h2>Conversor de unidades</h2><p class="sub">Longitud, peso y temperatura.</p>
     <label for="uType">Tipo</label>
     <select id="uType"><option value="len">Longitud</option><option value="wt">Peso</option><option value="tmp">Temperatura</option></select>
@@ -127,7 +144,7 @@ footer{text-align:center;color:var(--mut);font-size:.82rem;padding:30px 20px 50p
     <div><label for="uTo">A</label><select id="uTo"></select></div></div>
     <div class="out"><span class="big" id="uOut"></span></div>
   </section>
-  <section class="tool" id="img" style="--a:var(--c4)">
+  <section class="tool" id="img">
     <h2>Comprimir foto</h2><p class="sub">Baja el peso a 100 KB, 200 KB o lo que pidan. La foto no se sube a ningún lado.</p>
     <label for="iFile">Foto (JPG, PNG o WebP)</label><input id="iFile" type="file" accept="image/*">
     <label for="iKb">Peso máximo (KB)</label><input id="iKb" type="number" value="200" min="20">
@@ -136,14 +153,14 @@ footer{text-align:center;color:var(--mut);font-size:.82rem;padding:30px 20px 50p
     <button id="iDl" hidden>Descargar JPG</button>
   </section>
 
-  <section class="tool" id="letras" style="--a:var(--c3)">
+  <section class="tool" id="letras">
     <h2>Números a letras</h2><p class="sub">Para cheques y recibos, en dólares.</p>
     <label for="nVal">Cantidad</label><input id="nVal" type="number" value="1250.50" step="0.01" min="0">
     <div class="out" id="nOut"></div>
   </section>
 </main>
 
-<footer>Navaja · herramientas gratis · hecho en Panamá 🇵🇦</footer>
+<footer>Navaja, herramientas gratis hechas en Panamá.</footer>
 
 <script>
 const $=id=>document.getElementById(id);
