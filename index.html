@@ -209,12 +209,12 @@ $('aDate').oninput=()=>{
   const v=$('aDate').value; if(!v){$('aOut').textContent='Elige una fecha.';return}
   const [Y,M,D]=v.split('-').map(Number), b=new Date(Y,M-1,D), now=new Date(), today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   if(b>today){$('aOut').textContent='Esa fecha está en el futuro.';return}
-  let y=today.getFullYear()-Y, m=today.getMonth()-(M-1), d=today.getDate()-D;
-  if(d<0){m--;d+=new Date(today.getFullYear(),today.getMonth(),0).getDate()}
-  if(m<0){y--;m+=12}
+  const addM=(k)=>{const t=new Date(Y,M-1+k,1);return new Date(t.getFullYear(),t.getMonth(),Math.min(D,new Date(t.getFullYear(),t.getMonth()+1,0).getDate()))};
+  let months=(today.getFullYear()-Y)*12+today.getMonth()-(M-1); if(addM(months)>today)months--;
+  const y=Math.floor(months/12), m=months%12, d=Math.round((today-addM(months))/864e5);
   let next=new Date(today.getFullYear(),M-1,D); if(next<today)next=new Date(today.getFullYear()+1,M-1,D);
   const left=Math.round((next-today)/864e5), total=Math.round((today-b)/864e5);
-  $('aOut').innerHTML=`<b class="big">${y} años</b>, ${m} meses y ${d} días<br><small>${total.toLocaleString('es-PA')} días vividos · ${left===0?'¡Feliz cumpleaños! 🎉':'faltan '+left+' días para tu cumpleaños'}</small>`;
+  $('aOut').innerHTML=`<b class="big">${y} ${y===1?'año':'años'}</b>, ${m} ${m===1?'mes':'meses'} y ${d} ${d===1?'día':'días'}<br><small>${total.toLocaleString('es-PA')} días vividos · ${left===0?'¡Feliz cumpleaños! 🎉':'faltan '+left+' días para tu cumpleaños'}</small>`;
 };
 
 /* Unidades */
@@ -231,12 +231,13 @@ function fromC(c,u){return u==='°C'?c:u==='°F'?c*9/5+32:c+273.15}
 function conv(){
   const t=$('uType').value,v=parseFloat($('uVal').value),f=$('uFrom').value,to=$('uTo').value;
   const r=t==='tmp'?fromC(toC(v,f),to):v*U[t][f]/U[t][to];
-  $('uOut').textContent=Number.isFinite(r)?`${(+r.toPrecision(8)).toLocaleString('es-PA',{maximumFractionDigits:6})} ${to}`:'—';
+  $('uOut').textContent=Number.isFinite(r)?`${(+r.toPrecision(8)).toLocaleString('es-PA',{maximumSignificantDigits:8})} ${to}`:'—';
 }
 $('uType').onchange=fillUnits; ['uVal','uFrom','uTo'].forEach(i=>$(i).oninput=conv); fillUnits();
 /* Comprimir foto */
 let iBlob=null;
 $('iBtn').onclick=async()=>{
+  iBlob=null;$('iDl').hidden=true;
   const f=$('iFile').files[0]; if(!f){$('iOut').textContent='Elige una foto.';return}
   const max=Math.max(20,+$('iKb').value||200)*1024; $('iOut').textContent='Comprimiendo…';
   let bmp; try{bmp=await createImageBitmap(f)}catch(e){$('iOut').textContent='No se pudo leer esa imagen.';return}
