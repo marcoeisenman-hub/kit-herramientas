@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Navaja — herramientas gratis online</title>
+<meta name="description" content="Herramientas gratis y rápidas: generador de QR, contraseñas, contador de palabras, porcentajes, dividir cuenta, edad y conversor de unidades. Sin registro.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<style>
+:root{--bg:#0f1020;--card:#191a33;--line:#2a2c52;--txt:#f2f3ff;--mut:#a3a6cf;
+--c1:#ff5d73;--c2:#ffb340;--c3:#3ddc97;--c4:#4cc9f0;--c5:#a78bfa;--c6:#f472b6;--c7:#facc15}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.45}
+header{padding:56px 20px 28px;text-align:center;background:radial-gradient(circle at 20% 0,#ff5d7340,transparent 45%),radial-gradient(circle at 80% 10%,#4cc9f040,transparent 45%)}
+h1{font-size:clamp(2.2rem,6vw,3.6rem);margin:0;font-weight:800;letter-spacing:-.03em}
+h1 span{background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3),var(--c4),var(--c5));-webkit-background-clip:text;background-clip:text;color:transparent}
+header p{color:var(--mut);margin:10px auto 22px;max-width:520px}
+nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+nav a{color:var(--txt);text-decoration:none;font-size:.9rem;font-weight:600;padding:8px 14px;border-radius:999px;background:var(--card);border:1px solid var(--line)}
+nav a:hover{border-color:var(--c4)}
+main{max-width:1100px;margin:0 auto;padding:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
+.tool{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;border-top:5px solid var(--a);scroll-margin-top:16px}
+.tool h2{margin:0 0 4px;font-size:1.2rem}
+.tool .sub{color:var(--mut);font-size:.88rem;margin:0 0 14px}
+label{display:block;font-size:.82rem;color:var(--mut);margin:10px 0 4px}
+input,select,textarea{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1020;color:var(--txt);font:inherit}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--a);border-color:transparent}
+textarea{min-height:110px;resize:vertical}
+.row{display:flex;gap:10px}.row>*{flex:1}
+button{margin-top:12px;padding:11px 16px;border:0;border-radius:10px;font:inherit;font-weight:700;background:var(--a);color:#0f1020;cursor:pointer}
+button:hover{filter:brightness(1.1)}
+.out{margin-top:14px;padding:14px;border-radius:12px;background:#0f1020;border:1px dashed var(--line);font-size:1.05rem;min-height:48px;word-break:break-all}
+.big{font-size:1.6rem;font-weight:800;color:var(--a)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;text-align:center}
+.stats div{background:#0f1020;border-radius:10px;padding:10px 4px}
+.stats b{display:block;font-size:1.3rem;color:var(--a)}
+.stats small{color:var(--mut);font-size:.72rem}
+.chk{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:.88rem}
+.chk label{display:flex;align-items:center;gap:6px;margin:0;color:var(--txt)}
+.chk input{width:auto}
+#qr{display:flex;justify-content:center;background:#fff;border-radius:12px;padding:12px;margin-top:14px}
+#qr:empty{display:none}
+#qr img{max-width:100%;height:auto}
+.ad{grid-column:1/-1;border:1px dashed var(--line);border-radius:14px;padding:18px;text-align:center;color:var(--mut);font-size:.8rem}
+footer{text-align:center;color:var(--mut);font-size:.82rem;padding:30px 20px 50px}
+@media(max-width:400px){main{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <h1><span>Navaja</span></h1>
+  <p>Herramientas gratis, rápidas y sin registro. Todo funciona en tu navegador: nada de lo que escribes sale de tu equipo.</p>
+  <nav>
+    <a href="#qr-tool">QR</a><a href="#pass">Contraseñas</a><a href="#words">Palabras</a>
+    <a href="#pct">Porcentajes</a><a href="#split">Dividir cuenta</a><a href="#age">Edad</a><a href="#units">Unidades</a>
+  </nav>
+</header>
+
+<main>
+  <section class="tool" id="qr-tool" style="--a:var(--c1)">
+    <h2>Generador de QR</h2><p class="sub">Para un link, un WhatsApp o un texto.</p>
+    <label for="qrText">Texto o link</label>
+    <input id="qrText" placeholder="https://tu-negocio.com">
+    <button id="qrBtn">Crear QR</button>
+    <div id="qr"></div>
+    <button id="qrDl" hidden>Descargar PNG</button>
+  </section>
+
+  <section class="tool" id="pass" style="--a:var(--c2)">
+    <h2>Generador de contraseñas</h2><p class="sub">Seguras y aleatorias.</p>
+    <label for="pLen">Largo: <b id="pLenV">16</b></label>
+    <input type="range" id="pLen" min="8" max="40" value="16">
+    <div class="chk">
+      <label><input type="checkbox" id="pUp" checked>Mayúsculas</label>
+      <label><input type="checkbox" id="pNum" checked>Números</label>
+      <label><input type="checkbox" id="pSym" checked>Símbolos</label>
+    </div>
+    <button id="pBtn">Generar</button> <button id="pCopy" style="background:transparent;color:var(--a);border:1px solid var(--a)">Copiar</button>
+    <div class="out" id="pOut"></div>
+  </section>
+
+  <section class="tool" id="words" style="--a:var(--c3)">
+    <h2>Contador de palabras</h2><p class="sub">Ideal para tareas y ensayos.</p>
+    <textarea id="wText" placeholder="Pega o escribe tu texto aquí…"></textarea>
+    <div class="stats">
+      <div><b id="wW">0</b><small>palabras</small></div>
+      <div><b id="wC">0</b><small>caracteres</small></div>
+      <div><b id="wS">0</b><small>oraciones</small></div>
+      <div><b id="wR">0</b><small>min lectura</small></div>
+    </div>
+  </section>
+
+  <section class="tool" id="pct" style="--a:var(--c4)">
+    <h2>Calculadora de porcentajes</h2><p class="sub">Descuentos, notas, impuestos.</p>
+    <div class="row"><div><label for="pctA">¿Cuánto es el %</label><input id="pctA" type="number" value="7"></div>
+    <div><label for="pctB">de</label><input id="pctB" type="number" value="50"></div></div>
+    <div class="out"><span class="big" id="pctOut1"></span></div>
+    <div class="row"><div><label for="pctC">Precio</label><input id="pctC" type="number" value="80"></div>
+    <div><label for="pctD">Descuento %</label><input id="pctD" type="number" value="25"></div></div>
+    <div class="out" id="pctOut2"></div>
+  </section>
+
+  <div class="ad">Espacio publicitario</div>
+
+  <section class="tool" id="split" style="--a:var(--c5)">
+    <h2>Dividir la cuenta</h2><p class="sub">Con propina incluida.</p>
+    <label for="sTot">Total de la cuenta ($)</label><input id="sTot" type="number" value="60">
+    <div class="row"><div><label for="sTip">Propina %</label><input id="sTip" type="number" value="10"></div>
+    <div><label for="sPpl">Personas</label><input id="sPpl" type="number" value="4" min="1"></div></div>
+    <div class="out" id="sOut"></div>
+  </section>
+
+  <section class="tool" id="age" style="--a:var(--c6)">
+    <h2>Calculadora de edad</h2><p class="sub">Años, meses, días y tu próximo cumpleaños.</p>
+    <label for="aDate">Fecha de nacimiento</label><input id="aDate" type="date">
+    <div class="out" id="aOut">Elige una fecha.</div>
+  </section>
+
+  <section class="tool" id="units" style="--a:var(--c7)">
+    <h2>Conversor de unidades</h2><p class="sub">Longitud, peso y temperatura.</p>
+    <label for="uType">Tipo</label>
+    <select id="uType"><option value="len">Longitud</option><option value="wt">Peso</option><option value="tmp">Temperatura</option></select>
+    <div class="row"><div><label for="uVal">Valor</label><input id="uVal" type="number" value="1"></div>
+    <div><label for="uFrom">De</label><select id="uFrom"></select></div>
+    <div><label for="uTo">A</label><select id="uTo"></select></div></div>
+    <div class="out"><span class="big" id="uOut"></span></div>
+  </section>
+</main>
+
+<footer>Navaja · herramientas gratis · hecho en Panamá 🇵🇦</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const fmt=n=>Number.isFinite(n)?(+n.toFixed(2)).toLocaleString('es-PA'):'—';
+const money=n=>Number.isFinite(n)?'$'+n.toFixed(2):'—';
+
+/* QR */
+function makeQR(){
+  const t=$('qrText').value.trim(); if(!t){$('qr').innerHTML='';$('qrDl').hidden=true;return}
+  try{
+    const q=qrcode(0,'M'); q.addData(unescape(encodeURIComponent(t))); q.make();
+    $('qr').innerHTML=q.createImgTag(8,8); $('qrDl').hidden=false;
+  }catch(e){$('qr').innerHTML='<span style="color:#000">Texto demasiado largo.</span>';$('qrDl').hidden=true}
+}
+$('qrBtn').onclick=makeQR;
+$('qrText').addEventListener('keydown',e=>{if(e.key==='Enter')makeQR()});
+$('qrDl').onclick=()=>{const img=$('qr').querySelector('img');if(!img)return;
+  const a=document.createElement('a');a.href=img.src;a.download='codigo-qr.gif';a.click()};
+
+/* Contraseñas */
+function genPass(){
+  let s='abcdefghijkmnopqrstuvwxyz';
+  if($('pUp').checked)s+='ABCDEFGHJKLMNPQRSTUVWXYZ';
+  if($('pNum').checked)s+='23456789';
+  if($('pSym').checked)s+='!@#$%&*?-_+=';
+  const n=+$('pLen').value, r=new Uint32Array(n); crypto.getRandomValues(r);
+  $('pOut').textContent=Array.from(r,x=>s[x%s.length]).join('');
+}
+$('pLen').oninput=()=>{$('pLenV').textContent=$('pLen').value;genPass()};
+['pUp','pNum','pSym'].forEach(i=>$(i).onchange=genPass);
+$('pBtn').onclick=genPass;
+$('pCopy').onclick=async()=>{try{await navigator.clipboard.writeText($('pOut').textContent);$('pCopy').textContent='¡Copiada!';setTimeout(()=>$('pCopy').textContent='Copiar',1200)}catch(e){}};
+genPass();
+
+/* Palabras */
+$('wText').oninput=()=>{
+  const t=$('wText').value, w=(t.match(/[\p{L}\p{N}'’-]+/gu)||[]).length;
+  $('wW').textContent=w; $('wC').textContent=[...t].length;
+  $('wS').textContent=(t.match(/[^.!?¡¿]+[.!?]+/g)||[]).length+(/[^.!?\s]\s*$/.test(t)?1:0);
+  $('wR').textContent=Math.ceil(w/200);
+};
+
+/* Porcentajes */
+function pct(){
+  const a=parseFloat($('pctA').value),b=parseFloat($('pctB').value);
+  $('pctOut1').textContent=fmt(a*b/100);
+  const c=parseFloat($('pctC').value),d=parseFloat($('pctD').value);
+  $('pctOut2').innerHTML=`Pagas <b class="big">${money(c*(1-d/100))}</b><br><small>Te ahorras ${money(c*d/100)}</small>`;
+}
+['pctA','pctB','pctC','pctD'].forEach(i=>$(i).oninput=pct); pct();
+
+/* Dividir */
+function split(){
+  const t=parseFloat($('sTot').value),p=parseFloat($('sTip').value)||0,n=Math.max(1,parseInt($('sPpl').value)||1);
+  const tot=t*(1+p/100);
+  $('sOut').innerHTML=`Cada uno paga <b class="big">${money(tot/n)}</b><br><small>Propina ${money(t*p/100)} · Total ${money(tot)}</small>`;
+}
+['sTot','sTip','sPpl'].forEach(i=>$(i).oninput=split); split();
+
+/* Edad */
+$('aDate').max=new Date().toISOString().slice(0,10);
+$('aDate').oninput=()=>{
+  const v=$('aDate').value; if(!v){$('aOut').textContent='Elige una fecha.';return}
+  const [Y,M,D]=v.split('-').map(Number), b=new Date(Y,M-1,D), now=new Date(), today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  if(b>today){$('aOut').textContent='Esa fecha está en el futuro.';return}
+  let y=today.getFullYear()-Y, m=today.getMonth()-(M-1), d=today.getDate()-D;
+  if(d<0){m--;d+=new Date(today.getFullYear(),today.getMonth(),0).getDate()}
+  if(m<0){y--;m+=12}
+  let next=new Date(today.getFullYear(),M-1,D); if(next<today)next=new Date(today.getFullYear()+1,M-1,D);
+  const left=Math.round((next-today)/864e5), total=Math.round((today-b)/864e5);
+  $('aOut').innerHTML=`<b class="big">${y} años</b>, ${m} meses y ${d} días<br><small>${total.toLocaleString('es-PA')} días vividos · ${left===0?'¡Feliz cumpleaños! 🎉':'faltan '+left+' días para tu cumpleaños'}</small>`;
+};
+
+/* Unidades */
+const U={len:{m:1,km:1000,cm:.01,mm:.001,mi:1609.344,yd:.9144,ft:.3048,in:.0254},
+         wt:{kg:1,g:.001,lb:.45359237,oz:.028349523125,t:1000},
+         tmp:{'°C':0,'°F':0,K:0}};
+function fillUnits(){
+  const k=Object.keys(U[$('uType').value]);
+  $('uFrom').innerHTML=$('uTo').innerHTML=k.map(x=>`<option>${x}</option>`).join('');
+  $('uTo').selectedIndex=1; conv();
+}
+function toC(v,u){return u==='°C'?v:u==='°F'?(v-32)*5/9:v-273.15}
+function fromC(c,u){return u==='°C'?c:u==='°F'?c*9/5+32:c+273.15}
+function conv(){
+  const t=$('uType').value,v=parseFloat($('uVal').value),f=$('uFrom').value,to=$('uTo').value;
+  const r=t==='tmp'?fromC(toC(v,f),to):v*U[t][f]/U[t][to];
+  $('uOut').textContent=Number.isFinite(r)?`${(+r.toPrecision(8)).toLocaleString('es-PA',{maximumFractionDigits:6})} ${to}`:'—';
+}
+$('uType').onchange=fillUnits; ['uVal','uFrom','uTo'].forEach(i=>$(i).oninput=conv); fillUnits();
+</script>
+</body>
+</html>
