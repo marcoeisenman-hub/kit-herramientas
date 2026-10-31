@@ -54,7 +54,7 @@ footer{text-align:center;color:var(--mut);font-size:.82rem;padding:30px 20px 50p
   <p>Herramientas gratis, rápidas y sin registro. Todo funciona en tu navegador: nada de lo que escribes sale de tu equipo.</p>
   <nav>
     <a href="#qr-tool">QR</a><a href="#pass">Contraseñas</a><a href="#words">Palabras</a>
-    <a href="#pct">Porcentajes</a><a href="#split">Dividir cuenta</a><a href="#age">Edad</a><a href="#units">Unidades</a>
+    <a href="#pct">Porcentajes</a><a href="#split">Dividir cuenta</a><a href="#age">Edad</a><a href="#units">Unidades</a><a href="#img">Comprimir foto</a><a href="#letras">Números a letras</a>
   </nav>
 </header>
 
@@ -126,6 +126,20 @@ footer{text-align:center;color:var(--mut);font-size:.82rem;padding:30px 20px 50p
     <div><label for="uFrom">De</label><select id="uFrom"></select></div>
     <div><label for="uTo">A</label><select id="uTo"></select></div></div>
     <div class="out"><span class="big" id="uOut"></span></div>
+  </section>
+  <section class="tool" id="img" style="--a:var(--c4)">
+    <h2>Comprimir foto</h2><p class="sub">Baja el peso a 100 KB, 200 KB o lo que pidan. La foto no se sube a ningún lado.</p>
+    <label for="iFile">Foto (JPG, PNG o WebP)</label><input id="iFile" type="file" accept="image/*">
+    <label for="iKb">Peso máximo (KB)</label><input id="iKb" type="number" value="200" min="20">
+    <button id="iBtn">Comprimir</button>
+    <div class="out" id="iOut">Elige una foto.</div>
+    <button id="iDl" hidden>Descargar JPG</button>
+  </section>
+
+  <section class="tool" id="letras" style="--a:var(--c3)">
+    <h2>Números a letras</h2><p class="sub">Para cheques y recibos, en dólares.</p>
+    <label for="nVal">Cantidad</label><input id="nVal" type="number" value="1250.50" step="0.01" min="0">
+    <div class="out" id="nOut"></div>
   </section>
 </main>
 
@@ -220,6 +234,48 @@ function conv(){
   $('uOut').textContent=Number.isFinite(r)?`${(+r.toPrecision(8)).toLocaleString('es-PA',{maximumFractionDigits:6})} ${to}`:'—';
 }
 $('uType').onchange=fillUnits; ['uVal','uFrom','uTo'].forEach(i=>$(i).oninput=conv); fillUnits();
+/* Comprimir foto */
+let iBlob=null;
+$('iBtn').onclick=async()=>{
+  const f=$('iFile').files[0]; if(!f){$('iOut').textContent='Elige una foto.';return}
+  const max=Math.max(20,+$('iKb').value||200)*1024; $('iOut').textContent='Comprimiendo…';
+  let bmp; try{bmp=await createImageBitmap(f)}catch(e){$('iOut').textContent='No se pudo leer esa imagen.';return}
+  const c=document.createElement('canvas'),x=c.getContext('2d');
+  let scale=Math.min(1,2400/Math.max(bmp.width,bmp.height)),blob;
+  for(let i=0;i<14;i++){
+    c.width=Math.round(bmp.width*scale);c.height=Math.round(bmp.height*scale);
+    x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(bmp,0,0,c.width,c.height);
+    let lo=.3,hi=.92,best=null;
+    for(let j=0;j<7;j++){const q=(lo+hi)/2,b=await new Promise(r=>c.toBlob(r,'image/jpeg',q));if(b.size<=max){best=b;lo=q}else hi=q}
+    if(best){blob=best;break} scale*=.8;
+  }
+  if(!blob){$('iOut').textContent='No se logró ese peso; prueba con más KB.';return}
+  iBlob=blob;$('iDl').hidden=false;
+  $('iOut').innerHTML=`<b class="big">${Math.round(blob.size/1024)} KB</b><br><small>Antes ${Math.round(f.size/1024)} KB · ${c.width}×${c.height}px</small>`;
+};
+$('iDl').onclick=()=>{if(!iBlob)return;const a=document.createElement('a');a.href=URL.createObjectURL(iBlob);a.download='foto-comprimida.jpg';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000)};
+
+/* Números a letras */
+const UN=['','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte','veintiuno','veintidós','veintitrés','veinticuatro','veinticinco','veintiséis','veintisiete','veintiocho','veintinueve'];
+const DE=['','','','treinta','cuarenta','cincuenta','sesenta','setenta','ochenta','noventa'];
+const CE=['','ciento','doscientos','trescientos','cuatrocientos','quinientos','seiscientos','setecientos','ochocientos','novecientos'];
+function n999(n){if(n===100)return'cien';const c=Math.floor(n/100),r=n%100;
+  const d=r<30?UN[r]:DE[Math.floor(r/10)]+(r%10?' y '+UN[r%10]:'');return[CE[c],d].filter(Boolean).join(' ')}
+function letras(n){if(n===0)return'cero';
+  const mill=Math.floor(n/1e6),mil=Math.floor(n/1e3)%1000,r=n%1000,p=[];
+  if(mill)p.push(mill===1?'un millón':letras(mill).replace(/veintiuno$/,'veintiún').replace(/uno$/,'un')+' millones');
+  if(mil)p.push(mil===1?'mil':n999(mil).replace(/veintiuno$/,'veintiún').replace(/uno$/,'un')+' mil');
+  if(r)p.push(n999(r));return p.join(' ')}
+function nl(){
+  const v=parseFloat($('nVal').value);
+  if(!Number.isFinite(v)||v<0||v>=1e12){$('nOut').textContent='Escribe una cantidad entre 0 y 999,999,999,999.';return}
+  const cents=Math.round(v*100),ent=Math.floor(cents/100),c=cents%100;
+  let t=letras(ent).replace(/veintiuno$/,'veintiún').replace(/uno$/,'un');
+  t=(/(millón|millones)$/.test(t)?t+' de':t)+(ent===1?' dólar':' dólares');
+  t=t.charAt(0).toUpperCase()+t.slice(1)+(c?' con '+String(c).padStart(2,'0')+'/100':(ent===1?' exacto':' exactos'));
+  $('nOut').innerHTML=`<b>${t}</b>`;
+}
+$('nVal').oninput=nl; nl();
 </script>
 </body>
 </html>
