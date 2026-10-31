@@ -239,20 +239,22 @@ let iBlob=null;
 $('iBtn').onclick=async()=>{
   iBlob=null;$('iDl').hidden=true;
   const f=$('iFile').files[0]; if(!f){$('iOut').textContent='Elige una foto.';return}
+  $('iBtn').disabled=true; try{
   const max=Math.max(20,+$('iKb').value||200)*1024; $('iOut').textContent='Comprimiendo…';
   let bmp; try{bmp=await createImageBitmap(f)}catch(e){$('iOut').textContent='No se pudo leer esa imagen.';return}
   const c=document.createElement('canvas'),x=c.getContext('2d');
   let scale=Math.min(1,2400/Math.max(bmp.width,bmp.height)),blob;
   for(let i=0;i<14;i++){
-    c.width=Math.round(bmp.width*scale);c.height=Math.round(bmp.height*scale);
+    c.width=Math.max(1,Math.round(bmp.width*scale));c.height=Math.max(1,Math.round(bmp.height*scale));
     x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(bmp,0,0,c.width,c.height);
     let lo=.3,hi=.92,best=null;
-    for(let j=0;j<7;j++){const q=(lo+hi)/2,b=await new Promise(r=>c.toBlob(r,'image/jpeg',q));if(b.size<=max){best=b;lo=q}else hi=q}
+    for(let j=0;j<7;j++){const q=(lo+hi)/2,b=await new Promise(r=>c.toBlob(r,'image/jpeg',q));if(b&&b.size<=max){best=b;lo=q}else hi=q}
     if(best){blob=best;break} scale*=.8;
   }
   if(!blob){$('iOut').textContent='No se logró ese peso; prueba con más KB.';return}
   iBlob=blob;$('iDl').hidden=false;
   $('iOut').innerHTML=`<b class="big">${Math.round(blob.size/1024)} KB</b><br><small>Antes ${Math.round(f.size/1024)} KB · ${c.width}×${c.height}px</small>`;
+  }finally{$('iBtn').disabled=false}
 };
 $('iDl').onclick=()=>{if(!iBlob)return;const a=document.createElement('a');a.href=URL.createObjectURL(iBlob);a.download='foto-comprimida.jpg';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000)};
 
