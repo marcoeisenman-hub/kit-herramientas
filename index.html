@@ -390,7 +390,7 @@ if(matchMedia('(hover:hover) and (pointer:fine)').matches){
   function onMsg(m,from){
     if(!m||typeof m!=='object'||typeof m.id!=='string'||!/^[a-z0-9]{4,12}$/.test(m.id)||m.id===me.id)return;
     m.name=String(m.name||'Amigo').slice(0,16);
-    if(from)from._pid=m.id;
+    if(from){if(!from._pid)from._pid=m.id;else if(from._pid!==m.id)return}
     if(m.t==='bye'){drop(m.id)}
     else if(m.t==='m'){const p=getP(m);p.data={sec:m.sec,fx:+m.fx,fy:+m.fy,sec2:m.sec2,gx:+m.gx,gy:+m.gy,px:+m.px,py:+m.py}}
     else if(m.t==='c'){const p=getP(m);p.el.classList.remove('click');void p.el.offsetWidth;p.el.classList.add('click')}
@@ -429,7 +429,10 @@ if(matchMedia('(hover:hover) and (pointer:fine)').matches){
     m.px=e.pageX/document.documentElement.scrollWidth;m.py=e.pageY/document.documentElement.scrollHeight;
     return m;
   }
-  addEventListener('pointermove',e=>{if(!code)return;last=myPos(e);const n=performance.now();if(n-sendT>40){sendT=n;send(last)}});
+  let lc=null;
+  addEventListener('scroll',()=>{if(!code||!lc)return;const el=document.elementFromPoint(lc.x,lc.y);if(!el)return;
+    const n=performance.now();if(n-sendT>40){sendT=n;send(myPos({target:el,clientX:lc.x,clientY:lc.y,pageX:lc.x+scrollX,pageY:lc.y+scrollY}))}},{passive:true});
+  addEventListener('pointermove',e=>{lc={x:e.clientX,y:e.clientY};if(!code)return;last=myPos(e);const n=performance.now();if(n-sendT>40){sendT=n;send(last)}});
   addEventListener('pointerdown',e=>{if(code){send(myPos(e));send({t:'c'})}});
   function wire(c){
     c.on('open',()=>{c.send({t:'hi',id:me.id,name:me.name});
